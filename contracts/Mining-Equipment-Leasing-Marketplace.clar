@@ -257,6 +257,29 @@
     )
   )
 )
+(define-public (extend-lease (lease-id uint) (additional-days uint))
+  (let (
+    (lease-data (unwrap! (map-get? leases { lease-id: lease-id }) (err ERR_LEASE_NOT_FOUND)))
+    (equipment-data (unwrap! (map-get? equipment { equipment-id: (get equipment-id lease-data) }) (err ERR_EQUIPMENT_NOT_FOUND)))
+    (additional-cost (* (get daily-rate lease-data) additional-days))
+    (new-end-block (+ (get end-block lease-data) (* additional-days u144)))
+    (new-escrow (+ (get escrow-amount lease-data) additional-cost))
+  )
+    (asserts! (is-eq tx-sender (get lessee lease-data)) (err ERR_UNAUTHORIZED))
+    (asserts! (get is-active lease-data) (err ERR_LEASE_NOT_ACTIVE))
+    (asserts! (> additional-days u0) (err ERR_INVALID_AMOUNT))
+    (try! (stx-transfer? additional-cost tx-sender (as-contract tx-sender)))
+    (map-set leases
+      { lease-id: lease-id }
+      (merge lease-data { end-block: new-end-block, escrow-amount: new-escrow })
+    )
+    (map-set escrows
+      { lease-id: lease-id }
+      { amount: new-escrow, released: false }
+    )
+    (ok true)
+  )
+)
 
 (define-read-only (get-equipment (equipment-id uint))
   (map-get? equipment { equipment-id: equipment-id })
