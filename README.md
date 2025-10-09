@@ -7,6 +7,7 @@ A decentralized platform for leasing mining equipment powered by Clarity smart c
 - 📍 **GPS Tracking**: Track leased equipment location in real-time
 - ⚖️ **DAO Dispute Resolution**: Community-driven dispute resolution through voting
 - 🔒 **Secure Leasing**: Trustless equipment leasing with smart contract protection
+- ⭐ **Equipment Rating System**: Lessees can rate equipment after lease completion
 
 ## 🏁 Quick Start
 
@@ -44,6 +45,8 @@ clarinet deploy
 - `register-equipment` - Register new mining equipment
 - `update-equipment-location` - Update GPS coordinates
 - `get-equipment` - View equipment details
+- `rate-equipment` - Rate equipment after lease completion
+- `get-equipment-rating` - View equipment rating details
 
 ### 🤝 Leasing
 - `create-lease` - Create new equipment lease
@@ -70,6 +73,7 @@ clarinet deploy
 2. Create lease with escrow payment
 3. Use equipment during lease period
 4. Complete lease to release payment
+5. Rate equipment to provide feedback
 
 ### Dispute Resolution
 1. Create dispute if issues arise
@@ -82,6 +86,7 @@ clarinet deploy
 - **Lease**: Equipment ID, parties, duration, escrow amount, status
 - **Dispute**: Lease ID, description, votes, resolution status
 - **Escrow**: Amount, release status
+- **Equipment Rating**: Total rating, rating count
 
 ## 🌐 GPS Coordinates
 
@@ -96,6 +101,7 @@ Coordinates use integer format with 6 decimal places precision:
 - ✅ Community-driven dispute resolution
 - ✅ GPS coordinate validation
 - ✅ Lease duration and amount validation
+- ✅ Rating validation and duplicate prevention
 
 ## 🎯 Error Codes
 
@@ -110,6 +116,8 @@ Coordinates use integer format with 6 decimal places precision:
 - `u108` - Dispute not found
 - `u109` - Already voted
 - `u110` - Invalid coordinates
+- `u111` - Invalid rating
+- `u112` - Already rated
 
 ## 🚀 Deployment
 

@@ -10,6 +10,8 @@
 (define-constant ERR_DISPUTE_NOT_FOUND u108)
 (define-constant ERR_ALREADY_VOTED u109)
 (define-constant ERR_INVALID_COORDINATES u110)
+(define-constant ERR_INVALID_RATING u111)
+(define-constant ERR_ALREADY_RATED u112)
 
 (define-data-var equipment-id-counter uint u0)
 (define-data-var lease-id-counter uint u0)
@@ -65,6 +67,16 @@
 (define-map dispute-votes
   { dispute-id: uint, voter: principal }
   { voted: bool }
+)
+
+(define-map equipment-ratings
+  { equipment-id: uint }
+  { total-rating: uint, rating-count: uint }
+)
+
+(define-map rated-equipment
+  { equipment-id: uint, user: principal }
+  { rated: bool }
 )
 
 (define-public (register-equipment (name (string-ascii 50)) (daily-rate uint) (lat int) (lng int))
@@ -281,6 +293,26 @@
   )
 )
 
+(define-public (rate-equipment (lease-id uint) (rating uint))
+  (let (
+    (lease-data (unwrap! (map-get? leases { lease-id: lease-id }) (err ERR_LEASE_NOT_FOUND)))
+    (equipment-id (get equipment-id lease-data))
+  )
+    (asserts! (is-eq tx-sender (get lessee lease-data)) (err ERR_UNAUTHORIZED))
+    (asserts! (get is-completed lease-data) (err ERR_LEASE_NOT_ACTIVE))
+    (asserts! (and (>= rating u1) (<= rating u5)) (err ERR_INVALID_RATING))
+    (asserts! (is-none (map-get? rated-equipment { equipment-id: equipment-id, user: tx-sender })) (err ERR_ALREADY_RATED))
+    (let ((current-rating (default-to { total-rating: u0, rating-count: u0 } (map-get? equipment-ratings { equipment-id: equipment-id }))))
+      (map-set equipment-ratings
+        { equipment-id: equipment-id }
+        { total-rating: (+ (get total-rating current-rating) rating), rating-count: (+ (get rating-count current-rating) u1) }
+      )
+      (map-set rated-equipment { equipment-id: equipment-id, user: tx-sender } { rated: true })
+      (ok true)
+    )
+  )
+)
+
 (define-read-only (get-equipment (equipment-id uint))
   (map-get? equipment { equipment-id: equipment-id })
 )
@@ -307,4 +339,8 @@
 
 (define-read-only (get-dispute-counter)
   (var-get dispute-id-counter)
+)
+
+(define-read-only (get-equipment-rating (equipment-id uint))
+  (map-get? equipment-ratings { equipment-id: equipment-id })
 )
