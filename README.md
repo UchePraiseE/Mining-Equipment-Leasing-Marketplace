@@ -3,6 +3,7 @@ A decentralized platform for leasing mining equipment powered by Clarity smart c
 ## 🚀 Features
 
 - 🏗️ **Equipment Registration**: Register mining equipment with GPS coordinates
+- 🔄 **Equipment Ownership Transfer**: Seamless transfer of equipment ownership between principals
 - 💰 **Escrow System**: Secure rental payments with automatic escrow
 - 📍 **GPS Tracking**: Track leased equipment location in real-time
 - ⚖️ **DAO Dispute Resolution**: Community-driven dispute resolution through voting
@@ -42,6 +43,7 @@ clarinet deploy
 ## 📋 Core Functions
 
 ### 🏗️ Equipment Management
+- `transfer-equipment-ownership` - Transfer ownership of equipment to another principal
 - `register-equipment` - Register new mining equipment
 - `update-equipment-location` - Update GPS coordinates
 - `get-equipment` - View equipment details
@@ -64,6 +66,7 @@ clarinet deploy
 ## 🔧 Usage Examples
 
 ### Equipment Owner Workflow
+6. Transfer equipment ownership if needed
 1. Register equipment with location
 2. Wait for lease requests
 3. Receive automatic payment after lease completion
@@ -94,6 +97,7 @@ Coordinates use integer format with 6 decimal places precision:
 - Latitude: -90000000 to 90000000 (-90.0 to 90.0 degrees)
 - Longitude: -180000000 to 180000000 (-180.0 to 180.0 degrees)
 
+- ✅ Equipment ownership transfer with availability checks
 ## 🛡️ Security Features
 
 - ✅ Owner verification for equipment updates

@@ -344,3 +344,15 @@
 (define-read-only (get-equipment-rating (equipment-id uint))
   (map-get? equipment-ratings { equipment-id: equipment-id })
 )
+
+(define-public (transfer-equipment-ownership (equipment-id uint) (new-owner principal))
+  (let ((equipment-data (unwrap! (map-get? equipment { equipment-id: equipment-id }) (err ERR_EQUIPMENT_NOT_FOUND))))
+    (asserts! (is-eq tx-sender (get owner equipment-data)) (err ERR_UNAUTHORIZED))
+    (asserts! (get is-available equipment-data) (err ERR_LEASE_ACTIVE))
+    (map-set equipment
+      { equipment-id: equipment-id }
+      (merge equipment-data { owner: new-owner })
+    )
+    (ok true)
+  )
+)
