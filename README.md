@@ -9,6 +9,7 @@ A decentralized platform for leasing mining equipment powered by Clarity smart c
 - ⚖️ **DAO Dispute Resolution**: Community-driven dispute resolution through voting
 - 🔒 **Secure Leasing**: Trustless equipment leasing with smart contract protection
 - ⭐ **Equipment Rating System**: Lessees can rate equipment after lease completion
+- 🏁 **Early Lease Termination**: Allow lessees to terminate leases prematurely with a penalty fee
 
 ## 🏁 Quick Start
 
@@ -53,6 +54,7 @@ clarinet deploy
 ### 🤝 Leasing
 - `create-lease` - Create new equipment lease
 - `complete-lease` - Complete active lease
+- `terminate-lease-early` - Terminate lease early with penalty
 - `get-lease` - View lease details
 
 ### ⚖️ Dispute Resolution
@@ -75,6 +77,7 @@ clarinet deploy
 1. Find available equipment
 2. Create lease with escrow payment
 3. Use equipment during lease period
+3.5 Terminate lease early if needed (with penalty)
 4. Complete lease to release payment
 5. Rate equipment to provide feedback
 
@@ -106,6 +109,7 @@ Coordinates use integer format with 6 decimal places precision:
 - ✅ GPS coordinate validation
 - ✅ Lease duration and amount validation
 - ✅ Rating validation and duplicate prevention
+- ✅ Early termination with penalty enforcement
 
 ## 🎯 Error Codes
 

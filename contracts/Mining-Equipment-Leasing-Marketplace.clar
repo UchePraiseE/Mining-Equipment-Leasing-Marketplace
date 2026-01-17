@@ -12,6 +12,7 @@
 (define-constant ERR_INVALID_COORDINATES u110)
 (define-constant ERR_INVALID_RATING u111)
 (define-constant ERR_ALREADY_RATED u112)
+(define-constant EARLY_TERMINATION_PENALTY_PERCENT u20)
 
 (define-data-var equipment-id-counter uint u0)
 (define-data-var lease-id-counter uint u0)
@@ -352,6 +353,35 @@
     (map-set equipment
       { equipment-id: equipment-id }
       (merge equipment-data { owner: new-owner })
+    )
+    (ok true)
+  )
+)
+
+(define-public (terminate-lease-early (lease-id uint))
+  (let (
+    (lease-data (unwrap! (map-get? leases { lease-id: lease-id }) (err ERR_LEASE_NOT_FOUND)))
+    (escrow-data (unwrap! (map-get? escrows { lease-id: lease-id }) (err ERR_LEASE_NOT_FOUND)))
+    (penalty-amount (/ (* (get escrow-amount lease-data) EARLY_TERMINATION_PENALTY_PERCENT) u100))
+    (refund-amount (- (get escrow-amount lease-data) penalty-amount))
+  )
+    (asserts! (is-eq tx-sender (get lessee lease-data)) (err ERR_UNAUTHORIZED))
+    (asserts! (get is-active lease-data) (err ERR_LEASE_NOT_ACTIVE))
+    (try! (as-contract (stx-transfer? penalty-amount tx-sender (get lessor lease-data))))
+    (try! (as-contract (stx-transfer? refund-amount tx-sender (get lessee lease-data))))
+    (map-set leases
+      { lease-id: lease-id }
+      (merge lease-data { is-active: false, is-completed: true })
+    )
+    (map-set escrows
+      { lease-id: lease-id }
+      (merge escrow-data { released: true })
+    )
+    (let ((equipment-data (unwrap! (map-get? equipment { equipment-id: (get equipment-id lease-data) }) (err ERR_EQUIPMENT_NOT_FOUND))))
+      (map-set equipment
+        { equipment-id: (get equipment-id lease-data) }
+        (merge equipment-data { is-available: true })
+      )
     )
     (ok true)
   )
